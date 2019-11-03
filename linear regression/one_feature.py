@@ -32,7 +32,7 @@ def cal_next_b(a, b, x_value, y_value, learning_rate=0.0001):
 def cost(a, b, x_value, y_value):
     sigma = 0
     for i in range(len(x_value)):
-        sigma += (a * x_value[i] + b - y_value[i])**2
+        sigma += (a * x_value[i] + b - y_value[i]) ** 2
     return sigma / (2 * len(x_value))
 
 
@@ -58,11 +58,12 @@ for i in range(100):
         min = cost(a, b, size, price)
         best_a = a
         best_b = b
-    plt.plot(range(60), cal(a,b))
+    # plt.plot(range(60), cal(a, b))
     print()
 
 print("minimum error is ", min)
 print("best a is", best_a, "and best b is", best_b)
 plt.plot(range(60),cal(best_a,best_b))
 # plt.plot(range(60),cal(1, 1))
-plt.show()
+# plt.show()
+print(cost(1.0928, 0.028, size, price))
