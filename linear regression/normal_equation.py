@@ -24,5 +24,15 @@ def cal_cost(x_values, y_values, thetas):
     return sigma / (2 * len(y_values))
 
 
-print(cal_thetas(independent_variable, dependent_variable))
-print(cal_cost(independent_variable, dependent_variable, cal_thetas(independent_variable, dependent_variable)))
+def normal_equation(x_values, y_values):
+    print("running with inputs")
+    print("x values are", x_values)
+    print("y values are", y_values)
+    best_thetas = cal_thetas(x_values, y_values)
+    min_cost = cal_cost(x_values, y_values, best_thetas)
+    print("best thetas is", best_thetas)
+    print("minimum cost is ", min_cost)
+    return best_thetas, min_cost
+
+
+normal_equation(independent_variable, dependent_variable)

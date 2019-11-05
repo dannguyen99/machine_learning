@@ -41,6 +41,9 @@ def cal_cost(x_values, y_values, thetas):
 
 
 def mini(x_values, y_values, thetas, batch_size, learning_rate=0.001, no_iter=1000):
+    print("running with inputs")
+    print("x values are", x_values)
+    print("y values are", y_values)
     min_cost = cal_cost(x_values, y_values, thetas)
     best_thetas = thetas
     if batch_size > len(x_values):
@@ -52,12 +55,14 @@ def mini(x_values, y_values, thetas, batch_size, learning_rate=0.001, no_iter=10
         for s in samples:
             x_input.append(x_values[s])
             y_input.append(y_values[s])
-        # print("x is", x_input, "and y is", y_input)
+        print("x is", x_input, "and y is", y_input)
         thetas = cal_next_theta(x_input, y_input, thetas, learning_rate)
         if cal_cost(x_values, y_values, thetas) < min_cost:
             best_thetas = thetas
             min_cost = cal_cost(x_values, y_values, thetas)
+        print("best thetas is", best_thetas)
+        print("minimum cost is ", min_cost)
     return best_thetas, min_cost
 
 
-print(mini(independent_variable, dependent_variable, theta, b_size, rate, number_iter))
+mini(independent_variable, dependent_variable, theta, b_size, rate, number_iter)

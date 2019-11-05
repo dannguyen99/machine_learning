@@ -40,6 +40,9 @@ def cal_cost(x_values, y_values, thetas):
 
 
 def stochastic(x_values, y_values, thetas, learning_rate=0.001, no_iter=1000):
+    print("running with inputs")
+    print("x values are", x_values)
+    print("y values are", y_values)
     min_cost = cal_cost(x_values, y_values, thetas)
     best_thetas = thetas
     for i in range(no_iter):
@@ -47,11 +50,13 @@ def stochastic(x_values, y_values, thetas, learning_rate=0.001, no_iter=1000):
         x_input = [x_values[index]]
         y_input = [y_values[index]]
         thetas = cal_next_theta(x_input, y_input, thetas, learning_rate)
-        print("x is", x_input, "and y is", y_input)
+        # print("x is", x_input, "and y is", y_input)
         if cal_cost(x_values, y_values, thetas) < min_cost:
             best_thetas = thetas
             min_cost = cal_cost(x_values, y_values, thetas)
+    print("best thetas is", best_thetas)
+    print("minimum cost is ", min_cost)
     return best_thetas, min_cost
 
 
-print(stochastic(independent_variable, dependent_variable, theta, rate, number_iter))
+stochastic(independent_variable, dependent_variable, theta, rate, number_iter)

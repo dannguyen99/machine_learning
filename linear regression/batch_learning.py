@@ -39,15 +39,19 @@ def cal_cost(x_values, y_values, thetas):
 
 
 def batch_learning(x_values, y_values, thetas, learning_rate=0.001, no_iter=1000):
+    print("running with inputs")
+    print("x values are", x_values)
+    print("y values are", y_values)
     min_cost = cal_cost(x_values, y_values, thetas)
     best_thetas = thetas
     for i in range(no_iter):
         thetas = cal_next_theta(x_values, y_values, thetas, learning_rate)
-        # print("x is", x_values, "and y is", y_values)
         if cal_cost(x_values, y_values, thetas) < min_cost:
             best_thetas = thetas
             min_cost = cal_cost(x_values, y_values, thetas)
+    print("best thetas is", best_thetas)
+    print("minimum cost is ", min_cost)
     return best_thetas, min_cost
 
 
-print(batch_learning(independent_variable, dependent_variable, theta, rate, number_iter))
+batch_learning(independent_variable, dependent_variable, theta, rate, number_iter)
