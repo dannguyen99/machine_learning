@@ -1,13 +1,15 @@
 import math
 
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+import numpy as np
+import matplotlib.pyplot as plt
 
 # study dataset properties
 abalone_dataset = pd.read_csv('abalone.csv', sep=',', skipinitialspace=True)
 iris_dataset = pd.read_csv('iris.csv', sep=',', skipinitialspace=True)
 
-print(iris_dataset.corr())
+
+# print(iris_dataset.corr())
 
 
 # print(abalone_dataset.mean())
@@ -18,22 +20,11 @@ print(iris_dataset.corr())
 # print(abalone_dataset.corr())
 # print(iris_dataset.describe())
 class Dataset:
-    def __init__(self, datafile_path):
-        self.features_name = None
-        self.target_name = None
-        self.data = pd.read_csv(datafile_path, sep=',', skipinitialspace=True)
-
-    def set_features_name(self, features):
-        self.features_name = features
-
-    def set_target_name(self, target):
-        self.target_name = target
-
-    def standardize_data(self):
-        if self.features_name is None or self.target_name is None:
-            pass
-        y = self.data.loc[:, self.target_name].values
-        StandardScaler().fit_transform(self.data.loc[:, self.features_name].values)
+    def __init__(self, datafile_path, names, compute_feature):
+        self.data = pd.read_csv(datafile_path, sep=',', skipinitialspace=True, names=names)
+        self.feature_size = compute_feature
+        self.x = self.data.iloc[:, 0:self.feature_size].values
+        self.y = self.data.iloc[:, self.feature_size].values
 
     @staticmethod
     def mean(serie):
@@ -79,25 +70,31 @@ class Dataset:
             sum_covariance += (x - mean_x) * (y - mean_y)
         return round(sum_covariance / len(self.data.index), 3)
 
-    def covariance_all(self):
-        covariance_values = []
-        print("attribute\t\t", end="")
+    def covariance_all(self, is_print=False):
+        covariance_values = np.zeros((self.feature_size, self.feature_size))
+        if is_print:
+            print("Here is the covariance matrix")
+            print("attribute\t\t", end="")
         for i in self.data:
             column = self.data[i]
             if column.dtype == 'int64' or column.dtype == 'float64':
-                print(i, "\t", end="")
+                if is_print:
+                    print(i, "\t", end="")
         print()
-        for i in self.data:
+        for i, a in zip(self.data, range(self.feature_size)):
             column = self.data[i]
             if column.dtype == 'int64' or column.dtype == 'float64':
-                print(i, "\t", end="")
-                for j in self.data:
+                if is_print:
+                    print(i, "\t", end="")
+                for j, b in zip(self.data, range(self.feature_size)):
                     row = self.data[j]
                     if row.dtype == 'int64' or row.dtype == 'float64':
                         covariance_value = self.covariance(column, row)
-                        print(covariance_value, "\t\t\t", end="")
-                        covariance_values.append(covariance_value)
-                print()
+                        if is_print:
+                            print(covariance_value, "\t\t\t", end="")
+                        covariance_values[a][b] = covariance_value
+                if is_print:
+                    print()
         return covariance_values
 
     def correlation(self, serie_x, serie_y):
@@ -105,29 +102,51 @@ class Dataset:
         std_y = self.standard_deviation(serie_y)
         return round(self.covariance(serie_x, serie_y) / (std_x * std_y), 3)
 
-    def correlation_all(self):
-        correlation_values = []
-        print("attribute\t\t", end="")
+    def correlation_all(self, is_print=False):
+        correlation_values = np.zeros((self.feature_size, self.feature_size))
+        if is_print:
+            print("attribute\t\t", end="")
         for i in self.data:
             column = self.data[i]
             if column.dtype == 'int64' or column.dtype == 'float64':
-                print(i, "\t", end="")
+                if is_print:
+                    print(i, "\t", end="")
         print()
-        for i in self.data:
+        for i, a in zip(self.data, range(self.feature_size)):
             column = self.data[i]
             if column.dtype == 'int64' or column.dtype == 'float64':
-                print(i, "\t", end="")
-                for j in self.data:
+                if is_print:
+                    print(i, "\t", end="")
+                for j, b in zip(self.data, range(self.feature_size)):
                     row = self.data[j]
                     if row.dtype == 'int64' or row.dtype == 'float64':
                         correlation_value = self.correlation(column, row)
-                        print(correlation_value, "\t\t\t", end="")
-                        correlation_values.append(correlation_value)
-                print()
+                        if is_print:
+                            print(correlation_value, "\t\t\t", end="")
+                        correlation_values[a][b] = correlation_value
+                if is_print:
+                    print()
         return correlation_values
 
+    def pca(self):
+        eig_vals, eig_vecs = np.linalg.eig(self.correlation_all())
+        for ev in eig_vecs:
+            np.testing.assert_array_almost_equal(1.0, np.linalg.norm(ev))
+        # Make a list of (eigenvalue, eigenvector) tuples
+        eig_pairs = [(np.abs(eig_vals[i]), eig_vecs[:, i]) for i in range(len(eig_vals))]
 
-d = Dataset('abalone.csv')
-print(d.data.describe())
-print(d.data.cov())
-d.covariance_all()
+        # Sort the (eigenvalue, eigenvector) tuples from high to low
+        eig_pairs.sort()
+        eig_pairs.reverse()
+
+        matrix_w = np.hstack((eig_pairs[0][1].reshape(4, 1),
+                              eig_pairs[1][1].reshape(4, 1)))
+        # print(self.data.values)
+        Y = self.x.dot(matrix_w)
+        print(Y)
+
+
+d = Dataset('iris.csv', ['sepal length', 'sepal width', 'petal length', 'petal width', 'class'], 4)
+# print(d.data.describe())
+# print(d.correlation_all())
+print(d.pca())
