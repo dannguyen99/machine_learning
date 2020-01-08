@@ -1,24 +1,9 @@
 import math
 
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-
-# study dataset properties
-abalone_dataset = pd.read_csv('abalone.csv', sep=',', skipinitialspace=True)
-iris_dataset = pd.read_csv('iris.csv', sep=',', skipinitialspace=True)
+import pandas as pd
 
 
-# print(iris_dataset.corr())
-
-
-# print(abalone_dataset.mean())
-# print(abalone_dataset.var())
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-#     print(abalone_dataset.corr())
-# print(abalone_dataset.cov())
-# print(abalone_dataset.corr())
-# print(iris_dataset.describe())
 class Dataset:
     def __init__(self, datafile_path, names, compute_feature):
         self.data = pd.read_csv(datafile_path, sep=',', skipinitialspace=True, names=names)
@@ -30,14 +15,16 @@ class Dataset:
     def mean(serie):
         return round(sum(serie) / len(serie), 4)
 
-    def mean_all(self):
+    def mean_all(self, is_print=False):
         mean_values = []
-        print("attribute \t\t mean")
+        if is_print:
+            print("attribute \t\t mean")
         for i in self.data:
             column = self.data[i]
             if column.dtype == 'int64' or column.dtype == 'float64':
                 mean_value = self.mean(column)
-                print(i, "\t", mean_value)
+                if is_print:
+                    print(i, "\t", mean_value)
                 mean_values.append(mean_value)
         return mean_values
 
@@ -51,14 +38,16 @@ class Dataset:
             sum_var += (mean_value - i) ** 2
         return round(sum_var / len(serie), 4)
 
-    def variance_all(self):
+    def variance_all(self, is_print=False):
         variance_values = []
-        print("attribute \t\t variance")
+        if is_print:
+            print("attribute \t\t variance")
         for i in self.data:
             column = self.data[i]
             if column.dtype == 'int64' or column.dtype == 'float64':
                 variance_value = self.variance(column)
-                print(i, "\t", variance_value)
+                if is_print:
+                    print(i, "\t", variance_value)
                 variance_values.append(variance_value)
         return variance_values
 
@@ -105,6 +94,7 @@ class Dataset:
     def correlation_all(self, is_print=False):
         correlation_values = np.zeros((self.feature_size, self.feature_size))
         if is_print:
+            print("Here is the covariance matrix")
             print("attribute\t\t", end="")
         for i in self.data:
             column = self.data[i]
@@ -128,7 +118,7 @@ class Dataset:
                     print()
         return correlation_values
 
-    def pca(self):
+    def pca(self, is_print=False):
         eig_vals, eig_vecs = np.linalg.eig(self.correlation_all())
         for ev in eig_vecs:
             np.testing.assert_array_almost_equal(1.0, np.linalg.norm(ev))
@@ -143,10 +133,17 @@ class Dataset:
                               eig_pairs[1][1].reshape(4, 1)))
         # print(self.data.values)
         Y = self.x.dot(matrix_w)
-        print(Y)
+        principalDf = pd.DataFrame(data=Y
+                                   , columns=['principal component 1', 'principal component 2'])
+        if is_print:
+            print(principalDf)
+        return Y
 
 
-d = Dataset('iris.csv', ['sepal length', 'sepal width', 'petal length', 'petal width', 'class'], 4)
-# print(d.data.describe())
-# print(d.correlation_all())
-print(d.pca())
+d = Dataset('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data',
+            ['sepal length', 'sepal width', 'petal length', 'petal width', 'class'], 4)
+d.mean_all(is_print=True)
+d.variance_all(is_print=True)
+d.covariance_all(is_print=True)
+d.correlation_all(is_print=True)
+d.pca(is_print=True)
