@@ -1,12 +1,13 @@
 from random import sample
 import numpy as np
+import matplotlib.pyplot as plt
 
 independent_variable = np.array(
     [[1, 30, 3, 6], [1, 43, 4, 8], [1, 25, 2, 3], [1, 51, 4, 9], [1, 40, 3, 5], [1, 20, 1, 2]])
 dependent_variable = np.array([[2.5], [3.4], [1.8], [4.5], [3.2], [1.6]])
 theta = [0] * 4
 rate = 0.001
-number_iter = 1000
+number_iter = 100
 b_size = 2
 
 
@@ -48,20 +49,28 @@ def mini(x_values, y_values, thetas, batch_size, learning_rate=0.001, no_iter=10
     best_thetas = thetas
     if batch_size > len(x_values):
         return "invalid, batch size must >= whole batch size"
+    x_axis = []
+    y_axis = []
     for i in range(no_iter):
+        x_axis.append(i)
+        y_axis.append(cal_cost(x_values, y_values, thetas))
         samples = sample(range(0, len(x_values)), batch_size)
         x_input = []
         y_input = []
         for s in samples:
             x_input.append(x_values[s])
             y_input.append(y_values[s])
-        print("x is", x_input, "and y is", y_input)
+        # print("x is", x_input, "and y is", y_input)
         thetas = cal_next_theta(x_input, y_input, thetas, learning_rate)
         if cal_cost(x_values, y_values, thetas) < min_cost:
             best_thetas = thetas
             min_cost = cal_cost(x_values, y_values, thetas)
-        print("best thetas is", best_thetas)
-        print("minimum cost is ", min_cost)
+    print("best thetas is", best_thetas)
+    print("minimum cost is ", min_cost)
+    plt.plot(x_axis, y_axis)
+    plt.xlabel("epochs")
+    plt.ylabel("value of cost function")
+    plt.show()
     return best_thetas, min_cost
 
 

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 independent_variable = np.array(
     [[1, 30, 3, 6], [1, 43, 4, 8], [1, 25, 2, 3], [1, 51, 4, 9], [1, 40, 3, 5], [1, 20, 1, 2]])
@@ -35,7 +36,7 @@ def cal_cost(x_values, y_values, thetas):
             ht += thetas[j] * x_values[i][j]
         ht -= y_values[i]
         sigma += ht ** 2
-    return sigma / (2 * len(y_values))
+    return float(sigma / (2 * len(y_values)))
 
 
 def batch_learning(x_values, y_values, thetas, learning_rate=0.001, no_iter=1000):
@@ -44,14 +45,22 @@ def batch_learning(x_values, y_values, thetas, learning_rate=0.001, no_iter=1000
     print("y values are", y_values)
     min_cost = cal_cost(x_values, y_values, thetas)
     best_thetas = thetas
+    x_axis = []
+    y_axis = []
     for i in range(no_iter):
+        x_axis.append(i)
+        y_axis.append(cal_cost(x_values, y_values, thetas))
         thetas = cal_next_theta(x_values, y_values, thetas, learning_rate)
         if cal_cost(x_values, y_values, thetas) < min_cost:
             best_thetas = thetas
             min_cost = cal_cost(x_values, y_values, thetas)
     print("best thetas is", best_thetas)
     print("minimum cost is ", min_cost)
+    plt.plot(x_axis, y_axis)
+    plt.xlabel("epochs")
+    plt.ylabel("value of cost function")
+    # plt.show()
     return best_thetas, min_cost
 
 
-batch_learning(independent_variable, dependent_variable, theta, rate, number_iter)
+# batch_learning(independent_variable, dependent_variable, theta, rate, number_iter)

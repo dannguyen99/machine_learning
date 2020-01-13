@@ -1,12 +1,13 @@
 from random import randrange
 import numpy as np
+import matplotlib.pyplot as plt
 
 independent_variable = np.array(
     [[1, 30, 3, 6], [1, 43, 4, 8], [1, 25, 2, 3], [1, 51, 4, 9], [1, 40, 3, 5], [1, 20, 1, 2]])
 dependent_variable = np.array([[2.5], [3.4], [1.8], [4.5], [3.2], [1.6]])
 theta = [0] * 4
 rate = 0.001
-number_iter = 1000
+number_iter = 10000
 
 
 def cal_derivative(x_values, y_values, thetas, position):
@@ -45,7 +46,11 @@ def stochastic(x_values, y_values, thetas, learning_rate=0.001, no_iter=1000):
     print("y values are", y_values)
     min_cost = cal_cost(x_values, y_values, thetas)
     best_thetas = thetas
+    x_axis = []
+    y_axis = []
     for i in range(no_iter):
+        x_axis.append(i)
+        y_axis.append(cal_cost(x_values, y_values, thetas))
         index = randrange(len(x_values))
         x_input = [x_values[index]]
         y_input = [y_values[index]]
@@ -56,7 +61,11 @@ def stochastic(x_values, y_values, thetas, learning_rate=0.001, no_iter=1000):
             min_cost = cal_cost(x_values, y_values, thetas)
     print("best thetas is", best_thetas)
     print("minimum cost is ", min_cost)
+    plt.plot(x_axis, y_axis)
+    # plt.xlabel("epochs")
+    # plt.ylabel("value of cost function")
+    # plt.show()
     return best_thetas, min_cost
 
 
-stochastic(independent_variable, dependent_variable, theta, rate, number_iter)
+# stochastic(independent_variable, dependent_variable, theta, rate, number_iter)
