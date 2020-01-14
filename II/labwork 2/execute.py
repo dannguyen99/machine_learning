@@ -3,6 +3,7 @@ from sklearn import datasets, metrics
 from matplotlib import pyplot as plt
 
 from sklearn.cluster import AgglomerativeClustering, KMeans
+from sklearn.decomposition import PCA
 from scipy.cluster.hierarchy import dendrogram, linkage
 
 
@@ -107,10 +108,11 @@ def visualize_elbow_method(dataset, dataset_name):
     plt.title('Elbow Method for ' + dataset_name)
     plt.xlabel('Number of clusters')
     plt.ylabel('WCSS')
+    return wcss
 
 
 def visualize_kmeans_cluster(dataset, dataset_name, feature_set=None, use_PCA=False):
-    if feature_set is None:
+    if feature_set is None or use_PCA:
         feature_set = [0, 1]
     X = dataset.data
     Y = dataset.target
@@ -118,11 +120,13 @@ def visualize_kmeans_cluster(dataset, dataset_name, feature_set=None, use_PCA=Fa
     feature_names = dataset.feature_names
     first, second = feature_set[0], feature_set[1]
     model = KMeans(n_clusters=no_cluster, init='random', n_init=10)
+    if use_PCA:
+        pca = PCA(n_components=2)
+        X = pca.fit_transform(X)
     model.fit(X)
     labels = model.labels_
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
     title = dataset_name + " Dataset with k = " + str(no_cluster) + " clusters"
-    fig.suptitle(title, fontsize=18)
     colors = ['r', 'g', 'b']
     for i, color in zip(range(no_cluster), colors):
         ax1.scatter(X[Y == i, first], X[Y == i, second], s=50, marker='o', color=color)
@@ -130,11 +134,19 @@ def visualize_kmeans_cluster(dataset, dataset_name, feature_set=None, use_PCA=Fa
     for i, color in zip(range(no_cluster), colors):
         ax2.scatter(X[labels == i, first], X[labels == i, second], s=50, marker='o', cmap='jet')
     ax2.set_title('Predicted')
-    ax1.set_xlabel(feature_names[first])
-    ax1.set_ylabel(feature_names[second])
-    ax2.set_xlabel(feature_names[first])
-    ax2.set_ylabel(feature_names[second])
+    if use_PCA:
+        title += " using PCA"
+        ax1.set_xlabel("Principle Component 1")
+        ax1.set_ylabel("Principle Component 2")
+        ax2.set_xlabel("Principle Component 1")
+        ax2.set_ylabel("Principle Component 2")
+    else:
+        ax1.set_xlabel(feature_names[first])
+        ax1.set_ylabel(feature_names[second])
+        ax2.set_xlabel(feature_names[first])
+        ax2.set_ylabel(feature_names[second])
     ax1.legend(dataset.target_names)
+    fig.suptitle(title, fontsize=18)
     return labels
 
 
@@ -157,7 +169,7 @@ def clustering_evaluate(dataset, dataset_name, is_print=True):
     JC = metrics.jaccard_score(labels_true, labels_pred, average=None)
     results['JC'] = JC
     if is_print:
-        print("Evaluating", dataset_name)
+        print("Evaluating", dataset_name, "dataset")
         print("Accuracy =", ACC)
         print("Adjusted Rand index =", ARI)
         print("Mutual Information =", MI)
@@ -206,6 +218,11 @@ def main(show_plot=False):
     clustering_evaluate(dataset=iris, dataset_name=iris_name, is_print=True)
     # Evaluate Wine dataset
     clustering_evaluate(dataset=wine, dataset_name=wine_name, is_print=True)
+
+    # 2.5
+    # apply pca to datasets and visualize the results
+    visualize_kmeans_cluster(dataset=iris, dataset_name=iris_name, use_PCA=True, feature_set=[0, 3])
+    visualize_kmeans_cluster(dataset=wine, dataset_name=wine_name, use_PCA=True)
 
     # show the plots
     if show_plot:
