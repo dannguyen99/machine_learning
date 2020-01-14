@@ -2,7 +2,7 @@ import numpy as np
 from sklearn import datasets
 from matplotlib import pyplot as plt
 
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, KMeans
 from scipy.cluster.hierarchy import dendrogram, linkage
 
 
@@ -30,28 +30,38 @@ def plot_dendrogram(model, **kwargs):
 
 def plot_dendrogram_all(dataset, dataset_name):
     X = dataset.data
-    fig_dendrogram, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 8))
-    fig_dendrogram.suptitle("Agglomerative Clustering Dendrogram for " + dataset_name + " Dataset\n"
-                                                                                        "X axis is the number of "
-                                                                                        "points in node (or index of "
-                                                                                        "point if no parenthesis).")
+    # fig_dendrogram, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 8))
+    # fig_dendrogram.suptitle("Agglomerative Clustering Dendrogram for " + dataset_name + " Dataset\n"
+    #                                                                                     "X axis is the number of "
+    #                                                                                     "points in node (or index of "
+    #                                                                                     "point if no parenthesis).")
+    plt.figure()
     plot_dendrogram(AgglomerativeClustering(distance_threshold=0, n_clusters=None, linkage='single').fit(X),
-                    truncate_mode='level', p=3, ax=ax1)
-    ax1.set_title('Single Linkage')
+                    truncate_mode='level', p=3)
+    plt.title('Single Linkage')
+    plt.xlabel("The number of points in node (or index of point if no parenthesis).")
+    plt.figure()
     plot_dendrogram(AgglomerativeClustering(distance_threshold=0, n_clusters=None, linkage='complete').fit(X),
-                    truncate_mode='level', p=3, ax=ax2)
-    ax2.set_title('Complete Linkage')
+                    truncate_mode='level', p=3)
+    plt.title('Complete Linkage')
+    plt.xlabel("The number of points in node (or index of point if no parenthesis).")
+    plt.figure()
     plot_dendrogram(AgglomerativeClustering(distance_threshold=0, n_clusters=None, linkage='average').fit(X),
-                    truncate_mode='level', p=3, ax=ax3)
-    ax3.set_title('Average Linkage')
+                    truncate_mode='level', p=3)
+    plt.title('Average Linkage')
+    plt.xlabel("The number of points in node (or index of point if no parenthesis).")
+    plt.figure()
     plot_dendrogram(AgglomerativeClustering(distance_threshold=0, n_clusters=None, linkage='ward').fit(X),
-                    truncate_mode='level', p=3, ax=ax4)
-    ax4.set_title('Ward Linkage')
+                    truncate_mode='level', p=3)
+    plt.title('Ward Linkage')
+    plt.xlabel("The number of points in node (or index of point if no parenthesis).")
 
 
 def plot_dendrogram_single(array):
     fig_dendrogram_single, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
     fig_dendrogram_single.suptitle("Dendrogram for One single array Input")
+    ax1.set_title("Single Linkage")
+    ax2.set_title('Complete Linkage')
     dendrogram(linkage(array, method='single'), ax=ax1)
     dendrogram(linkage(array, method='complete'), ax=ax2)
 
@@ -86,7 +96,7 @@ def visualize_ahc_cluster(dataset, dataset_name, linkage_type='ward', feature_se
 
 
 def main(show_plot=False):
-    x = np.array([[1], [2], [9], [12], [20]])
+    # x = np.array([[1], [2], [9], [12], [20]])
     # plot the dendrograms of single array
     # plot_dendrogram_single(x)
 
@@ -95,12 +105,23 @@ def main(show_plot=False):
     iris_name = "Iris"
 
     # plot the dendrograms of Iris
-    plot_dendrogram_all(dataset=iris, dataset_name=iris_name)
+    # plot_dendrogram_all(dataset=iris, dataset_name=iris_name)
 
     # apply ahc with Iris, compare with actual data
-    visualize_ahc_cluster(dataset=iris, dataset_name=iris_name, linkage_type='complete', feature_set=[0, 3])
+    # visualize_ahc_cluster(dataset=iris, dataset_name=iris_name, linkage_type='single', feature_set=[0, 1])
+
+    # load Wine Dataset
+    wine = datasets.load_wine()
+    wine_name = "Wine"
+
+    # plot the dendrograms of Wine
+    # plot_dendrogram_all(dataset=wine, dataset_name=wine_name)
+
+    # apply ahc with Wine, compare with actual data
+    # visualize_ahc_cluster(dataset=wine, dataset_name=wine_name, linkage_type='single', feature_set=[0, 1])
 
     # show the plots
+
     if show_plot:
         plt.show()
 
