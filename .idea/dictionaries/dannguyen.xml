@@ -6,7 +6,10 @@
       <w>dendrogram</w>
       <w>dendrograms</w>
       <w>eigenvector</w>
+      <w>kmeans</w>
+      <w>pred</w>
       <w>serie</w>
+      <w>wcss</w>
     </words>
   </dictionary>
 </component>
