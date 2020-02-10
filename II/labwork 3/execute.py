@@ -4,7 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import normalize
 from sklearn.decomposition import PCA, TruncatedSVD
 from matplotlib import pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 import seaborn as sns
 
 
@@ -85,7 +85,8 @@ def visualize_knn(dataset):
     plt.ylabel("Principle Component 2")
 
 
-def evaluate_k_model(dataset, dataset_name, n_neighbors=5, is_normalize=False, use_PCA=False, is_print=True):
+def evaluate_k_model(dataset, dataset_name, n_neighbors=5, is_normalize=False, use_PCA=False, is_print=True,
+                     is_loo=False):
     results = {}
     X = dataset.data
     y = dataset.target
@@ -97,6 +98,9 @@ def evaluate_k_model(dataset, dataset_name, n_neighbors=5, is_normalize=False, u
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=1)
     model = KNeighborsClassifier(n_neighbors=n_neighbors, metric='euclidean')
     model.fit(X_train, y_train)
+    if is_loo:
+        scores = cross_val_score(model, X=X, y=y, cv=50)
+        print(scores)
     labels_true = y_test
     labels_pred = model.predict(X_test)
     ACC = metrics.accuracy_score(labels_true, labels_pred)
@@ -150,9 +154,9 @@ def main():
     wine = datasets.load_wine()
     breast_cancer = datasets.load_breast_cancer()
     # visualize_perceptron(breast_cancer)
-    visualize_knn(iris)
-    evaluate_k_model(dataset=iris, dataset_name="Iris", n_neighbors=5, is_normalize=False, use_PCA=True)
-    # evaluate_number_k(dataset=iris, dataset_name="Iris", is_normalize=True)
+    visualize_knn(breast_cancer)
+    # evaluate_k_model(dataset=breast_cancer, dataset_name="Breast Cancer", n_neighbors=6, is_normalize=True, use_PCA=False, is_loo=False)
+    # evaluate_number_k(dataset=breast_cancer, dataset_name="Breast Cancer", is_normalize=True)
     plt.show()
 
 
